@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PostgreSQL Connectivity Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #007acc;
+        }
+        .status {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005fa3;
+        }
+        ul {
+            padding-left: 1.2rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3rem;
+        }
+        .log-time {
+            font-weight: bold;
+            margin-right: 0.5rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Postgres Connectivity</h1>
+        <div class="status">
+            Status: <strong>{{ "✅ Connected" if connected else "❌ Not Connected" }}</strong>
+        </div>
+
+        {% if connected %}
+        <h2>Add Log Entry</h2>
+        <form action="/submit" method="post">
+            <input type="text" name="log_text" placeholder="Enter log message" required>
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>Existing Logs</h2>
+        <ul>
+            <table border="1" cellpadding="5">
+                <tr>
+                  <th>ID</th>
+                  <th>Time</th>
+                  <th>Text</th>
+                  <th>Action</th>
+                </tr>
+                {% for log in logs %}
+                  <tr>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.log_time }}</td>
+                    <td>{{ log.log_text }}</td>
+                    <td><a href="/delete/{{ log.id }}" onclick="return confirm('Are you sure you want to delete this log?');">🗑️ Delete</a></td>
+                  </tr>
+                {% endfor %}
+              </table>            
+        </ul>
+        {% else %}
+        <p>Database connection failed. Please check connection details.</p>
+        {% endif %}
+        {% if not connected %}
+        <div style="color: red; font-weight: bold;">
+            ⚠️ Database connection failed: {{ error_message }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
